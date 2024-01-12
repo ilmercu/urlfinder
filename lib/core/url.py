@@ -1,5 +1,6 @@
 from __future__ import annotations
 from urllib.parse import urlparse, parse_qsl, unquote_plus, quote_plus
+from tldextract import extract as domain_extractor
     
 class URL:
     def __init__(self, url: str, base_url: str=''):
@@ -45,6 +46,9 @@ class URL:
         if url.startswith('/'):
             return f'{base_url}{url}'
         
+        if url.startswith('http'):
+            return f'{url}'
+        
         return f'{base_url}/{url}'
     
     def is_same_resource(self, second_url: URL):
@@ -59,9 +63,9 @@ class URL:
             return True
 
         # test if domains are the same 
-        if second_url.parts.netloc == self.alternative_base_url.parts.netloc:
+        if self.is_same_domain(second_url):
             # test if paths are the same 
-            if second_url.parts.path == self.alternative_base_url.parts.path:
+            if second_url.parts.path == self.parts.path:
                 return True
         
             # test if the only difference is the final slash
@@ -69,3 +73,19 @@ class URL:
                 return True
         
         return False
+
+    def is_same_domain(self, second_url: URL):
+        """
+        Check if two URLs have the same domain
+        :param second_url: second URL
+        :return: True if two resources have the same domain, False otherwise
+        """
+
+        second_url_domain = domain_extractor(second_url.parts.netloc)
+        url_domain = domain_extractor(self.parts.netloc)
+
+        # skip comparing www subdomain
+        if (('www' not in [ second_url_domain.subdomain, url_domain.domain ]) and ('' not in [ second_url_domain.subdomain, url_domain.domain ]) and (second_url_domain.subdomain != url_domain.domain)): 
+            return False
+
+        return second_url_domain.domain == url_domain.domain and second_url_domain.suffix == url_domain.suffix

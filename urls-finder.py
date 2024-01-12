@@ -10,8 +10,8 @@ ONLY_SAME_DOMAIN = True
 
 # init url queue
 url_queue = queue.Queue()
-url = URL(BASE_URL)
-url_queue.put(url)
+base_url = URL(BASE_URL)
+url_queue.put(base_url)
 
 # visited urls
 url_set = set()
@@ -49,8 +49,16 @@ if __name__ == '__main__':
 
         for url in all_urls:
             new_url = URL(url.get('href'), BASE_URL)
-            print(url.get('href'))
-            print(new_url)
-            print('----------')
+
+            if ONLY_SAME_DOMAIN:
+                if base_url.is_same_domain(new_url):
+                    print(url.get('href'))
+                    print(new_url)
+                    print('----------')
+            else:
+                print(base_url)
+                print(new_url)
+                print('----------')
+
             if current_url not in url_set:
                 url_queue.put(new_url)
