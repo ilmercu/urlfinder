@@ -4,6 +4,12 @@ from tldextract import extract as domain_extractor
     
 class URL:
     def __init__(self, url: str, base_url: str=''):
+        """
+        Return new URL instance
+        :param url: new URL
+        :param base_url: original URL (needed only if not creating original URL instance)
+        """
+        
         if base_url:
             url = self.__format_url(url, base_url)
 
@@ -23,6 +29,7 @@ class URL:
         if self.parts.query:
             queries = ''
 
+            # compose query
             for query in self.parts.query:
                 queries += f'{query[0]}={quote_plus(query[1])}&'
 
@@ -34,12 +41,27 @@ class URL:
         return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}{self.parts.fragment}'
 
     def init_base_url_alternative(self):
+        """
+        Set alternative base url including or excluding slash at the end of it depending on original URL
+        """
+        
         if '/' == self.parts.path:
             self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}')
         else:
             self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}{self.parts.params}')
 
     def __format_url(self, url: str, base_url: str):
+        """
+        Format the URL properly
+        :param url: new URL
+        :base_url: original URL
+        :return: 
+            - original URL if the new one contains only \"#\"
+            - original URL concatenate with current URL if the new one starts with \"/\"
+            - new URL if it starts with \"http\"
+            - concatenation of original URL + \"/\" + new URL, otherwise
+        """
+
         if '#' == url:
             return base_url
         
