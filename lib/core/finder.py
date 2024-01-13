@@ -23,6 +23,7 @@ class Finder:
                 break
 
             current_url = self.url_queue.get()
+            print(f'////{current_url}')
             self.url_set.add(current_url)
 
             current_url.init_base_url_alternative()
@@ -49,5 +50,5 @@ class Finder:
                     print(new_url)
                     print('----------')
 
-                if current_url not in self.url_set:
+                if new_url not in self.url_set:
                     self.url_queue.put(new_url)
