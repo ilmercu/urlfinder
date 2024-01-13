@@ -6,9 +6,9 @@ from .url import URL
 
 
 class Finder:
-    def __init__(self, base_url: URL, only_same_domain: bool=True):
+    def __init__(self, base_url: URL, all_domains: bool):
         self.base_url = base_url
-        self.only_same_domain = only_same_domain
+        self.only_same_domain = not all_domains
 
         # init url queue
         self.url_queue = queue.Queue()
@@ -17,7 +17,7 @@ class Finder:
         # visited urls
         self.url_set = set()
 
-    def find(self):
+    def find(self):            
         while True:
             if self.url_queue.empty():
                 break
