@@ -1,6 +1,6 @@
-# URLs Finder
+# urlfinder
 
-URLs Finder is tool which allows to find recursively all the URLs starting from a base URL. URL are taken from `<a>` tags or `<form>` action attributes.
+urlfinder is tool which allows to find recursively all the URLs starting from a base URL. URL are taken from `<a>` tags or `<form>` action attributes.
 
 The tool can retrieve only links coming from same domain or retrieve all the URLs in a page
 
