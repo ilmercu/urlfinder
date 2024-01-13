@@ -3,12 +3,13 @@ import queue
 from bs4 import BeautifulSoup
 
 from .url import URL
-
+from .output_manager import OutputManager
 
 class Finder:
-    def __init__(self, base_url: URL, all_domains: bool):
+    def __init__(self, base_url: URL, all_domains: bool, output_manager: OutputManager):
         self.base_url = base_url
         self.only_same_domain = not all_domains
+        self.output_manager = output_manager
 
         # init url queue
         self.url_queue = queue.Queue()
