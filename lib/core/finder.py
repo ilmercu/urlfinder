@@ -27,7 +27,12 @@ class Finder:
 
             current_url.init_base_url_alternative()
 
-            response = requests.get(current_url)
+            try:
+                response = requests.get(current_url)
+            except requests.exceptions.InvalidSchema:
+                print(f"Can't send request to an invalid URL. URL: {current_url}")
+                continue
+
             bsoup = BeautifulSoup(response.text, 'html.parser')
             all_urls = bsoup.findAll('a')
 
