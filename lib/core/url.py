@@ -1,7 +1,8 @@
 from __future__ import annotations
 from urllib.parse import urlparse, parse_qsl, unquote_plus, quote_plus
 from tldextract import extract as domain_extractor
-    
+
+
 class URL:
     def __init__(self, url: str, base_url: str=''):
         """
@@ -26,6 +27,9 @@ class URL:
         return hash(self.parts)
     
     def __str__(self):
+        return self.human_readable_url()
+
+    def human_readable_url(self):
         if self.parts.query:
             queries = ''
 
