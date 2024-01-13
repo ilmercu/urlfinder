@@ -34,8 +34,10 @@ class URL:
             queries = ''
 
             # compose query
+            i = 0
             for query in self.parts.query:
-                queries += f'{query[0]}={quote_plus(query[1])}&'
+               queries += f'{query[0]}=FUZZ{i}&'
+               i += 1
 
             # removing last &
             queries = queries[:-1]
