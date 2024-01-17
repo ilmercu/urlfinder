@@ -15,11 +15,16 @@ class OutputManager:
             else:
                 self.destination_path = f'{self.destination_path}/{DEFAULT_OUTPUT_FILENAME}'
         
+        # create empty file
         try:
-            with open(self.destination_path, 'w') as fp:
+            with open(self.destination_path, 'w') as f:
                 pass
         except PermissionError as e:
             print(f'Error writing {e.filename}. Permission denied or file/folder already exists')
 
-    def write_on_file(self):
-        pass
+    def write(self, line: str):
+        try:
+            with open(self.destination_path, 'a') as f:
+                f.write(f'{line}\n')
+        except PermissionError as e:
+            print(f'Error writing {e.filename}. Permission denied or file/folder already exists')

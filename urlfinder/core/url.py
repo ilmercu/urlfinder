@@ -27,17 +27,20 @@ class URL:
         return hash(self.parts)
     
     def __str__(self):
-        return self.human_readable_url()
+        return self.get_url()
 
-    def human_readable_url(self):
+    def get_url(self, fuzz: bool=False):
         if self.parts.query:
             queries = ''
 
             # compose query
             i = 0
             for query in self.parts.query:
-               queries += f'{query[0]}=FUZZ{i}&'
-               i += 1
+                if fuzz:
+                   queries += f'{query[0]}=FUZZ{i}'
+                else:
+                    queries += f'{quote_plus(query[1])}&'
+                i += 1
 
             # removing last &
             queries = queries[:-1]
@@ -72,6 +75,8 @@ class URL:
             return base_url
         
         if url.startswith('/'):
+            if base_url.endswith('/'):
+                return f'{base_url[:-1]}{url}'
             return f'{base_url}{url}'
         
         if url.startswith('http'):

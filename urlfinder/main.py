@@ -1,6 +1,6 @@
-from lib.core.url import URL
-from lib.core.finder import Finder
-from lib.core.output_manager import OutputManager
+from urlfinder.core.url import URL
+from urlfinder.core.finder import Finder
+from urlfinder.core.output_manager import OutputManager
 import click
 
 @click.command()
@@ -9,9 +9,9 @@ import click
 @click.option('--all-domain', '-a', help='Scan all domains   [default: False]', is_flag=True, show_default=True, default=False)
 def main(url, output_path, all_domain):
     output_manager = OutputManager(output_path) if output_path else None
-    #base_url = URL(url)
-    #finder = Finder(base_url, all_domain, output_manager)
-    #finder.find()
+    base_url = URL(url)
+    finder = Finder(base_url, all_domain, output_manager)
+    finder.find()
 
 if __name__ == '__main__':
     main()
