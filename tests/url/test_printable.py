@@ -8,13 +8,13 @@ class TestPrintable(unittest.TestCase):
         url = URL(main_url)
         self.assertEqual(url.get_url(), main_url)
 
-    def test_success_print_main_url_with_resource(self):
-        main_url = 'https://acde.com/test.php'
+    def test_success_print_with_slash(self):
+        main_url = 'https://acde.com/'
         url = URL(main_url)
         self.assertEqual(url.get_url(), main_url)
 
-    def test_success_print_with_slash(self):
-        main_url = 'https://acde.com/'
+    def test_success_print_main_url_with_resource(self):
+        main_url = 'https://acde.com/test.php'
         url = URL(main_url)
         self.assertEqual(url.get_url(), main_url)
 
@@ -39,6 +39,12 @@ class TestPrintable(unittest.TestCase):
         result = url.get_url() in [ main_url, url_swapped_params ]
         self.assertTrue(result)
 
+    def test_success_print_parameter_without_equal(self):
+        main_url = 'https://acde.com/test.php?test'
+        url = URL(main_url)
+        desired_url = f'{main_url}='
+        self.assertEqual(url.get_url(), desired_url)
+
     def test_success_print_multi_parameters_empty_value(self):
         main_url = 'https://acde.com/test.php?test=&test2=notempty'
         url = URL(main_url)
@@ -46,12 +52,6 @@ class TestPrintable(unittest.TestCase):
         url_swapped_params = 'https://acde.com/test.php?test2=notempty&test='
         result = url.get_url() in [ main_url, url_swapped_params ]
         self.assertTrue(result)
-
-    def test_success_print_multi_parameters_empty_value(self):
-        main_url = 'https://acde.com/test.php?test'
-        url = URL(main_url)
-        desired_url = f'{main_url}='
-        self.assertEqual(url.get_url(), desired_url)
 
     def test_success_print_empty_parameters(self):
         main_url = 'https://acde.com/test.php?test=&test2='
