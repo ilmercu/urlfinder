@@ -24,15 +24,19 @@ class OutputManager:
         Create destination filepaths
         """
 
-        for filepath in OutputManagerEnum.list():
-            makedirs(path.dirname(filepath), exist_ok=True)
-            
-            # create empty file
-            try:
+        try:
+            for filepath in OutputManagerEnum.list():
+                makedirs(path.dirname(filepath), exist_ok=True)
+                
+                # create empty file
                 with open(filepath, 'w') as f:
                     pass
-            except PermissionError as e:
-                print(f'Error writing {e.filename}. Permission denied or file/folder already exists with the same name')
+        except PermissionError as e:
+            print(f'Error writing {e.filename}. Permission denied or file/folder already exists with the same name')
+            exit(1)
+        except FileExistsError as e:
+            print(f'Error creating destination filepath. File or folder with the same name already exists')
+            exit(1)
 
     def write(self, filepath: str, line: str):
         """
@@ -46,3 +50,4 @@ class OutputManager:
                 f.write(f'{line}\n')
         except PermissionError as e:
             print(f'Error writing {e.filename}. Permission denied')
+            exit(1)
