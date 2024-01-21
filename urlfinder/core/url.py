@@ -29,23 +29,21 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz_parameters: bool=False):        
+    def get_url(self, fuzz_parameters: bool=False):       
         if self.parts.query:
             queries = ''
 
             # compose query
             i = 0
             for query in self.parts.query:
-                query_parameter = f'{query[0]}='
                 
                 if fuzz_parameters:
-                    if query[1]:
-                       query_parameter = f'{query_parameter}FUZZ{i}'
+                    queries = f'{query[0]}=FUZZ{i}&{queries}'
                 else:
+                    query_parameter = f'{query[0]}='
                     if query[1]:
                        query_parameter = f'{query_parameter}{quote_plus(query[1])}'
-                
-                queries = f'{query_parameter}&{queries}'
+                    queries = f'{query_parameter}&{queries}'
                 i += 1
 
             # removing last &

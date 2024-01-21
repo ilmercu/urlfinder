@@ -2,7 +2,7 @@ import unittest
 
 from urlfinder.core.url import URL
 
-class TestPrintable(unittest.TestCase):
+class TestHumanPrintable(unittest.TestCase):
     def test_success_print_main_url(self):
         main_url = 'https://acde.com'
         url = URL(main_url)
@@ -34,10 +34,7 @@ class TestPrintable(unittest.TestCase):
     def test_success_print_single_parameter_empty(self):
         main_url = 'https://acde.com/test.php?test='
         url = URL(main_url)
-        # swap parameters since set doesn't keep insertion order
-        url_swapped_params = 'https://acde.com/test.php?test='
-        result = url.get_url() in [ main_url, url_swapped_params ]
-        self.assertTrue(result)
+        self.assertEqual(url.get_url(), main_url)
 
     def test_success_print_parameter_without_equal(self):
         main_url = 'https://acde.com/test.php?test'
