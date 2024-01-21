@@ -43,7 +43,6 @@ class Finder:
                 break
 
             current_url = self.urls_to_visit.pop()
-            current_url.init_base_url_alternative()
             logging.info(f'Starting visiting {current_url.get_url()}')
             self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILEPATH.value, current_url.get_url())
 
@@ -64,10 +63,8 @@ class Finder:
                     new_url = URL(url.get('href'), self.base_url.get_url())
                 except AttributeError as e:
                     continue
-                
-                new_url.init_base_url_alternative()
 
-                if new_url.get_url(fuzz_parameters=True) in self.all_urls or new_url.alternative_base_url.get_url(fuzz_parameters=True) in self.all_urls:
+                if new_url.get_url(fuzz_parameters=True) in self.all_urls:
                     continue
 
                 if not self.only_same_domain or (self.only_same_domain and self.base_url.is_same_domain(new_url)):

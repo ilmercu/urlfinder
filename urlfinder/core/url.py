@@ -24,7 +24,7 @@ class URL:
         return self.parts == other.parts
 
     def __hash__(self):
-        return hash(self.parts)
+        return hash(self.get_url(fuzz_parameters=True))
     
     def __str__(self):
         return self.get_url()
@@ -59,16 +59,6 @@ class URL:
 
         return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}{self.parts.fragment}'
 
-    def init_base_url_alternative(self):
-        """
-        Set alternative base url including or excluding slash at the end of it depending on original URL
-        """
-
-        if '/' == self.parts.path:
-            self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}')
-        else:
-            self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{self.parts.params}')
-
     def __format_url(self, url: str, base_url: str):
         """
         Format the URL properly
@@ -102,7 +92,7 @@ class URL:
         """
 
         # test if objects are the same
-        if second_url == self or second_url == self.alternative_base_url:
+        if second_url == self:
             return True
 
         # test if domains are the same 
