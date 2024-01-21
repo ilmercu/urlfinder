@@ -26,10 +26,7 @@ class TestHumanPrintable(unittest.TestCase):
     def test_success_print_with_parameters(self):
         main_url = 'https://acde.com/test.php?test=hello&test2=world'
         url = URL(main_url)
-        # swap parameters since set doesn't keep insertion order
-        url_swapped_params = 'https://acde.com/test.php?test2=world&test=hello'
-        result = url.get_url() in [ main_url, url_swapped_params ]
-        self.assertTrue(result)
+        self.assertEqual(url.get_url(), main_url)
 
     def test_success_print_single_parameter_empty(self):
         main_url = 'https://acde.com/test.php?test='

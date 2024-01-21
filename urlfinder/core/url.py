@@ -15,7 +15,7 @@ class URL:
             url = self.__format_url(url, base_url)
 
         parts = urlparse(url)
-        _query = frozenset(parse_qsl(parts.query, keep_blank_values=True))
+        _query = parse_qsl(parts.query, keep_blank_values=True)
         _path = unquote_plus(parts.path)
         parts = parts._replace(query=_query, path=_path)
         self.parts = parts
@@ -29,7 +29,7 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz_parameters: bool=False):       
+    def get_url(self, fuzz_parameters: bool=False): 
         if self.parts.query:
             queries = ''
 
@@ -38,12 +38,12 @@ class URL:
             for query in self.parts.query:
                 
                 if fuzz_parameters:
-                    queries = f'{query[0]}=FUZZ{i}&{queries}'
+                    queries += f'{query[0]}=FUZZ{i}&'
                 else:
                     query_parameter = f'{query[0]}='
                     if query[1]:
                        query_parameter = f'{query_parameter}{quote_plus(query[1])}'
-                    queries = f'{query_parameter}&{queries}'
+                    queries += f'{query_parameter}&'
                 i += 1
 
             # removing last &
@@ -135,4 +135,4 @@ class URL:
         :return: True if the URL contains a set of parameters, False otherwise
         """
 
-        return frozenset() != self.parts.query
+        return self.parts.query
