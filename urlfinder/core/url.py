@@ -29,17 +29,17 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz: bool=False):
+    def get_url(self, fuzz_parameters: bool=False):
         if self.parts.query:
             queries = ''
 
             # compose query
             i = 0
             for query in self.parts.query:
-                if fuzz:
-                   queries += f'{query[0]}=FUZZ{i}'
+                if fuzz_parameters:
+                   queries += f'{query[0]}=FUZZ{i}&'
                 else:
-                    queries += f'{quote_plus(query[1])}&'
+                    queries += f'{query[0]}={quote_plus(query[1])}&'
                 i += 1
 
             # removing last &
@@ -53,11 +53,11 @@ class URL:
         """
         Set alternative base url including or excluding slash at the end of it depending on original URL
         """
-        
+
         if '/' == self.parts.path:
             self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}')
         else:
-            self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}{self.parts.params}')
+            self.alternative_base_url = URL(f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{self.parts.params}')
 
     def __format_url(self, url: str, base_url: str):
         """
@@ -117,8 +117,18 @@ class URL:
         second_url_domain = domain_extractor(second_url.parts.netloc)
         url_domain = domain_extractor(self.parts.netloc)
 
-        # skip comparing www subdomain
-        if (('www' not in [ second_url_domain.subdomain, url_domain.domain ]) and ('' not in [ second_url_domain.subdomain, url_domain.domain ]) and (second_url_domain.subdomain != url_domain.domain)): 
-            return False
+        if second_url_domain.subdomain == url_domain.subdomain and second_url_domain.domain == url_domain.domain and second_url_domain.suffix == url_domain.suffix:
+            return True
+        
+        if 'www' in [ second_url_domain.subdomain, url_domain.subdomain ] and '' in [ second_url_domain.subdomain, url_domain.subdomain ] and second_url_domain.domain == url_domain.domain:
+            return True
 
-        return second_url_domain.domain == url_domain.domain and second_url_domain.suffix == url_domain.suffix
+        return False
+    
+    def is_fuzzable(self):
+        """
+        Return if an URL can be fuzzable
+        :return: True if the URL contains a set of parameters, False otherwise
+        """
+
+        return frozenset() != self.parts.query

@@ -4,7 +4,7 @@ import logging
 from bs4 import BeautifulSoup
 
 from .url import URL
-from .output_manager import OutputManager
+from .output_manager import OutputManager, OutputManagerEnum
 
 logging.basicConfig(
     level=logging.INFO, 
@@ -18,25 +18,26 @@ class Finder:
         self.only_same_domain = not all_domains
         self.output_manager = output_manager
 
-        # init url queue
-        self.url_queue = queue.Queue()
-        self.url_queue.put(self.base_url)
+        # URLs to visit
+        self.urls_to_visit = set()
+        self.urls_to_visit.add(self.base_url)
 
-        # visited urls
-        self.url_set = set()
+        # all URLs (visited + to visit) 
+        self.all_urls = set()
+        self.all_urls.add(base_url.get_url(fuzz_parameters=True))
 
     def find(self):            
         while True:
-            if self.url_queue.empty():
+            if not self.urls_to_visit:
                 break
 
-            current_url = self.url_queue.get()
+            current_url = self.urls_to_visit.pop()
             current_url.init_base_url_alternative()
             logging.info(f'Starting visiting {current_url.get_url()}')
+            self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILEPATH.value, current_url.get_url())
 
-            # mark as visited
-            self.url_set.add(current_url.get_url())
-            self.url_set.add(current_url.alternative_base_url.get_url())
+            if current_url.is_fuzzable():
+                self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILEPATH.value, current_url.get_url(fuzz_parameters=True))
 
             try:
                 response = requests.get(current_url)
@@ -45,9 +46,9 @@ class Finder:
                 continue
 
             bsoup = BeautifulSoup(response.text, 'html.parser')
-            all_urls = bsoup.findAll('a')
+            urls_list = bsoup.findAll('a')
 
-            for url in all_urls:
+            for url in urls_list:
                 try:
                     new_url = URL(url.get('href'), self.base_url.get_url())
                 except AttributeError as e:
@@ -55,17 +56,11 @@ class Finder:
                 
                 new_url.init_base_url_alternative()
 
-                if new_url.get_url() not in self.url_set and new_url.alternative_base_url.get_url() not in self.url_set:
-                    if (self.only_same_domain and self.base_url.is_same_domain(new_url)):
-                        logging.info(f'Found link {new_url.get_url()}')
-                        logging.info(f'Add link to visit {new_url.get_url()}')
-                        self.url_queue.put(new_url)
-                    elif not self.only_same_domain:
-                        logging.info(f'Found link {new_url.get_url()}')
-                        logging.info(f'Add link to visit {new_url.get_url()}')
-                        self.url_queue.put(new_url)
+                if new_url.get_url(fuzz_parameters=True) in self.all_urls or new_url.alternative_base_url.get_url(fuzz_parameters=True) in self.all_urls:
+                    continue
 
-        logging.info(f'Writing URLs to {self.output_manager.destination_path}')
-
-        for url in self.url_set:
-            self.output_manager.write(url)
+                if not self.only_same_domain or (self.only_same_domain and self.base_url.is_same_domain(new_url)):
+                    logging.info(f'Found link -- {new_url.get_url()}')
+                    logging.info(f'Add link to visit -- {new_url.get_url()}')
+                    self.urls_to_visit.add(new_url)
+                    self.all_urls.add(new_url.get_url(fuzz_parameters=True))
