@@ -15,7 +15,7 @@ class URL:
             url = self.__format_url(url, base_url)
 
         parts = urlparse(url)
-        _query = frozenset(parse_qsl(parts.query))
+        _query = frozenset(parse_qsl(parts.query, keep_blank_values=True))
         _path = unquote_plus(parts.path)
         parts = parts._replace(query=_query, path=_path)
         self.parts = parts
@@ -29,17 +29,23 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz_parameters: bool=False):
+    def get_url(self, fuzz_parameters: bool=False):        
         if self.parts.query:
             queries = ''
 
             # compose query
             i = 0
             for query in self.parts.query:
+                query_parameter = f'{query[0]}='
+                
                 if fuzz_parameters:
-                   queries += f'{query[0]}=FUZZ{i}&'
+                    if query[1]:
+                       query_parameter = f'{query_parameter}FUZZ{i}'
                 else:
-                    queries += f'{query[0]}={quote_plus(query[1])}&'
+                    if query[1]:
+                       query_parameter = f'{query_parameter}{quote_plus(query[1])}'
+                
+                queries = f'{query_parameter}&{queries}'
                 i += 1
 
             # removing last &
