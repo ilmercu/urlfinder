@@ -1,8 +1,10 @@
 # urlfinder
 
-urlfinder is tool which allows to find recursively all the URLs starting from a base URL. URLs are taken from `<a>` tags or `<form>` action attributes.
+urlfinder is an enumeration tool which allows to find recursively all the URLs starting from a base one. URLs are taken from:
++ href attribute from `<a>` tags
++ action attribute from `<form>` tags
 
-The tool can retrieve only links coming from same domain or retrieve all the URLs in a page
+The tool can retrieve only URLs coming from the same domain of the base URL or retrieve the entire set of URLs in a page considering infinite domains
 
 ## How To Execute
 
@@ -39,6 +41,8 @@ python ./urlfinder/main.py -u <BASE-URL>
 ## Improvements
 
 + Handle protool-relative URL
++ Retrieve and save mails coming from <a> tags
++ Retrieve URLs inside <script> tags
 
 ## Disclaimer
 
