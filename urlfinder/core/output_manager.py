@@ -13,9 +13,17 @@ class OutputManagerEnum(Enum):
 
 class OutputManager:
     def __init__(self):
+        """
+        Return new OutputManager instance creating also destination filepaths
+        """
+
         self.__create_destination_path()
 
     def __create_destination_path(self):
+        """
+        Create destination filepaths
+        """
+
         for filepath in OutputManagerEnum.list():
             makedirs(path.dirname(filepath), exist_ok=True)
             
@@ -27,6 +35,12 @@ class OutputManager:
                 print(f'Error writing {e.filename}. Permission denied or file/folder already exists with the same name')
 
     def write(self, filepath: str, line: str):
+        """
+        Write content inside a file
+        :parameter filepath: destination file
+        :parameter line: content to write
+        """
+
         try:
             with open(filepath, 'a') as f:
                 f.write(f'{line}\n')

@@ -14,6 +14,13 @@ logging.basicConfig(
 
 class Finder:
     def __init__(self, base_url: URL, all_domains: bool, output_manager: OutputManager):
+        """
+        Return new Finder instance
+        :parameter base_url: URL object representing the base URL (user input)
+        :parameter all_domains: bool representing if the tool must retrieve URLs coming from an infinite set of domains
+        :parameter output_manager: OutputManager instance which handles output files
+        """
+        
         self.base_url = base_url
         self.only_same_domain = not all_domains
         self.output_manager = output_manager
@@ -26,7 +33,11 @@ class Finder:
         self.all_urls = set()
         self.all_urls.add(base_url.get_url(fuzz_parameters=True))
 
-    def find(self):            
+    def find(self):
+        """
+        Retrieve URLs and save them in output files
+        """
+        
         while True:
             if not self.urls_to_visit:
                 break

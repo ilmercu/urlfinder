@@ -29,7 +29,13 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz_parameters: bool=False): 
+    def get_url(self, fuzz_parameters: bool=False):
+        """
+        Get human readble or fuzzed format URL
+        :param fuzz_parameters: True if the return value will contain replaced query values, False otherwise
+        :return: human readable URL or fuzzed parameters URL 
+        """
+        
         if self.parts.query:
             queries = ''
 
