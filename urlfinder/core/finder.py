@@ -71,4 +71,6 @@ class Finder:
                     logging.info(f'Found link -- {new_url.get_url()}')
                     logging.info(f'Add link to visit -- {new_url.get_url()}')
                     self.urls_to_visit.add(new_url)
+
+                    # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
                     self.all_urls.add(new_url.get_url(fuzz_parameters=True))
