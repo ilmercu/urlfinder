@@ -30,7 +30,7 @@ class TestResource(unittest.TestCase):
 
     def test_different_resource_domain(self):
         url_1 = URL('https://xcvber.com')
-        url_2 = URL('https://instagram.com')
+        url_2 = URL('https://lkjh.com')
         self.assertFalse(url_1.is_same_resource(url_2))
 
     def test_different_resource_without_single_path(self):
