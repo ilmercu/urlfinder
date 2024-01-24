@@ -42,6 +42,7 @@ python ./urlfinder/main.py -u <BASE-URL>
 
 + Retrieve URLs inside <script> tags
 + Add option to encode the URL
++ Add option to check status code from response 
 
 ## Disclaimer
 
