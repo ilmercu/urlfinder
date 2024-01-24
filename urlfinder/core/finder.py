@@ -4,6 +4,8 @@ import logging
 from bs4 import BeautifulSoup
 
 from .url import URL
+from .mail import Mail
+from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
 
 logging.basicConfig(
@@ -33,6 +35,9 @@ class Finder:
         self.all_urls = set()
         self.all_urls.add(base_url.get_url(fuzz_parameters=True))
 
+        # mail set
+        self.mails = set()
+
     def find(self):
         """
         Retrieve URLs and save them in output files
@@ -59,11 +64,23 @@ class Finder:
             urls_list = bsoup.findAll('a')
 
             for url in urls_list:
-                try:
-                    new_url = URL(url.get('href'), self.base_url.get_url())
-                except AttributeError as e:
+                if not url.get('href'): # skip empty value
                     continue
 
+                url_parser = URLParser(url.get('href'), self.base_url.get_url())
+
+                if url_parser.is_mail():
+                    mail = Mail(url_parser.get_parts())
+                    if mail not in self.mails:
+                        self.mails.add(mail)
+                        self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILEPATH.value, mail.get_mail())
+                    continue
+
+                try:
+                    new_url = URL(url_parser.get_parts(), self.base_url.get_url())
+                except AttributeError as e:
+                    continue
+                
                 if new_url.get_url(fuzz_parameters=True) in self.all_urls:
                     continue
 
