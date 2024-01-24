@@ -3,21 +3,19 @@ from os import makedirs, path
 from enum import Enum
 
 class OutputManagerEnum(Enum):
-    URLS_LIST_OUTPUT_FILEPATH = './output/urls-complete-list.txt'
-    FUZZABLE_URLS_OUTPUT_FILEPATH = './output/fuzzable-urls.txt'
-    MAIL_OUTPUT_FILEPATH = './output/mails.txt'
-
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
+    BASE_PATH = './output'
+    URLS_LIST_OUTPUT_FILENAME = 'urls-complete-list.txt'
+    FUZZABLE_URLS_OUTPUT_FILENAME = 'fuzzable-urls.txt'
+    MAIL_OUTPUT_FILENAME = 'mails.txt'
 
 
 class OutputManager:
-    def __init__(self):
+    def __init__(self, domain: str):
         """
         Return new OutputManager instance creating also destination filepaths
         """
 
+        self.base_path = f'{OutputManagerEnum.BASE_PATH.value}/{domain}/'
         self.__create_destination_path()
 
     def __create_destination_path(self):
@@ -25,8 +23,14 @@ class OutputManager:
         Create destination filepaths
         """
 
+        filepaths = [ 
+            f'{self.base_path}/{OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME.value}', 
+            f'{self.base_path}/{OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME.value}', 
+            f'{self.base_path}/{OutputManagerEnum.MAIL_OUTPUT_FILENAME.value}'
+        ]
+
         try:
-            for filepath in OutputManagerEnum.list():
+            for filepath in filepaths:
                 makedirs(path.dirname(filepath), exist_ok=True)
                 
                 # create empty file
@@ -47,7 +51,7 @@ class OutputManager:
         """
 
         try:
-            with open(filepath, 'a') as f:
+            with open(f'{self.base_path}/{filepath}', 'a') as f:
                 f.write(f'{line}\n')
         except PermissionError as e:
             print(f'Error writing {e.filename}. Permission denied')

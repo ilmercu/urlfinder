@@ -49,10 +49,10 @@ class Finder:
 
             current_url = self.urls_to_visit.pop()
             logging.info(f'Starting visiting {current_url.get_url()}')
-            self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILEPATH.value, current_url.get_url())
+            self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME.value, current_url.get_url())
 
             if current_url.is_fuzzable():
-                self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILEPATH.value, current_url.get_url(fuzz_parameters=True))
+                self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME.value, current_url.get_url(fuzz_parameters=True))
 
             try:
                 response = requests.get(current_url)
@@ -73,7 +73,7 @@ class Finder:
                     mail = Mail(url_parser.get_parts())
                     if mail not in self.mails:
                         self.mails.add(mail)
-                        self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILEPATH.value, mail.get_mail())
+                        self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME.value, mail.get_mail())
                     continue
 
                 try:
