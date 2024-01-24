@@ -1,23 +1,22 @@
 from __future__ import annotations
-from urllib.parse import urlparse, parse_qsl, unquote_plus, quote_plus
+from urllib.parse import ParseResult, quote_plus
 from tldextract import extract as domain_extractor
 
-
 class URL:
-    def __init__(self, url: str, base_url: str=''):
+    """
+    This class represent an URL
+    """
+    
+    def __init__(self, parts: ParseResult, base_url: str=''):
         """
         Return new URL instance
         :param url: new URL
         :param base_url: original URL (needed only if not creating original URL instance)
         """
         
-        if base_url:
-            url = self.__format_url(url, base_url)
-
-        parts = urlparse(url)
-        _query = parse_qsl(parts.query, keep_blank_values=True)
-        _path = unquote_plus(parts.path)
-        parts = parts._replace(query=_query, path=_path)
+        #if base_url:
+        #    url = self.__format_url(url, base_url)
+        
         self.parts = parts
 
     def __eq__(self, other):
@@ -55,34 +54,40 @@ class URL:
             # removing last &
             queries = queries[:-1]
             
-            return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{queries}{self.parts.fragment}'
+            if self.parts.fragment:
+                return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{queries}#{self.parts.fragment}'
+            
+            return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{queries}'
 
-        return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}{self.parts.fragment}'
+        if self.parts.fragment:
+            return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}#{self.parts.fragment}'
+        
+        return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}'
 
-    def __format_url(self, url: str, base_url: str):
-        """
-        Format the URL properly
-        :param url: new URL
-        :base_url: original URL
-        :return: 
-            - original URL if the new one contains only \"#\"
-            - original URL concatenate with current URL if the new one starts with \"/\"
-            - new URL if it starts with \"http\"
-            - concatenation of original URL + \"/\" + new URL, otherwise
-        """
+    # def __format_url(self, url: str, base_url: str):
+    #     """
+    #     Format the URL properly
+    #     :param url: new URL
+    #     :base_url: original URL
+    #     :return: 
+    #         - original URL if the new one contains only \"#\"
+    #         - original URL concatenate with current URL if the new one starts with \"/\"
+    #         - new URL if it starts with \"http\"
+    #         - concatenation of original URL + \"/\" + new URL, otherwise
+    #     """
 
-        if '#' == url:
-            return base_url
+    #     if '#' == url:
+    #         return base_url
         
-        if url.startswith('/'):
-            if base_url.endswith('/'):
-                return f'{base_url[:-1]}{url}'
-            return f'{base_url}{url}'
+    #     if url.startswith('/'):
+    #         if base_url.endswith('/'):
+    #             return f'{base_url[:-1]}{url}'
+    #         return f'{base_url}{url}'
         
-        if url.startswith('http'):
-            return f'{url}'
+    #     if url.startswith('http'):
+    #         return f'{url}'
         
-        return f'{base_url}/{url}'
+    #     return f'{base_url}/{url}'
     
     def is_same_resource(self, second_url: URL):
         """

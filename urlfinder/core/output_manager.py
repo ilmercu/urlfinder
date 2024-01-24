@@ -5,6 +5,7 @@ from enum import Enum
 class OutputManagerEnum(Enum):
     URLS_LIST_OUTPUT_FILEPATH = './output/urls-complete-list.txt'
     FUZZABLE_URLS_OUTPUT_FILEPATH = './output/fuzzable-urls.txt'
+    MAIL_OUTPUT_FILEPATH = './output/mails.txt'
 
     @classmethod
     def list(cls):

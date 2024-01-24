@@ -40,8 +40,6 @@ python ./urlfinder/main.py -u <BASE-URL>
 
 ## Improvements
 
-+ Handle protool-relative URL
-+ Retrieve and save mails coming from <a> tags
 + Retrieve URLs inside <script> tags
 + Add option to encode the URL
 
