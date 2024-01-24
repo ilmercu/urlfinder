@@ -43,7 +43,7 @@ class OutputManager:
             print(f'Error creating destination filepath. File or folder with the same name already exists')
             exit(1)
 
-    def write(self, filepath: str, line: str):
+    def write(self, filepath: OutputManagerEnum, line: str):
         """
         Write content inside a file
         :parameter filepath: destination file
@@ -51,7 +51,7 @@ class OutputManager:
         """
 
         try:
-            with open(f'{self.base_path}/{filepath}', 'a') as f:
+            with open(f'{self.base_path}/{filepath.value}', 'a') as f:
                 f.write(f'{line}\n')
         except PermissionError as e:
             print(f'Error writing {e.filename}. Permission denied')
