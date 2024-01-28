@@ -35,7 +35,7 @@ pip install -e .
 ### Execute tool
 
 ```bash
-python ./urlfinder/main.py -u <BASE-URL>
+python urlfinder -u <BASE-URL>
 ```
 
 ## Improvements
