@@ -7,15 +7,11 @@ class URL:
     This class represent an URL
     """
     
-    def __init__(self, parts: ParseResult, base_url: str=''):
+    def __init__(self, parts: ParseResult):
         """
         Return new URL instance
         :param url: new URL
-        :param base_url: original URL (needed only if not creating original URL instance)
         """
-        
-        #if base_url:
-        #    url = self.__format_url(url, base_url)
         
         self.parts = parts
 
@@ -28,16 +24,15 @@ class URL:
     def __str__(self):
         return self.get_url()
 
-    def get_url(self, fuzz_parameters: bool=False):
+    def get_url(self, fuzz_parameters: bool=False) -> str:
         """
         Get human readble or fuzzed format URL
         :param fuzz_parameters: True if the return value will contain replaced query values, False otherwise
         :return: human readable URL or fuzzed parameters URL 
         """
         
+        queries = ''
         if self.parts.query:
-            queries = ''
-
             # compose query
             i = 0
             for query in self.parts.query:
@@ -52,44 +47,15 @@ class URL:
                 i += 1
 
             # removing last &
-            queries = queries[:-1]
-            
-            if self.parts.fragment:
-                return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{queries}#{self.parts.fragment}'
-            
-            return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}?{queries}'
-
+            queries = f'?{queries[:-1]}'
+        
+        fragment = ''
         if self.parts.fragment:
-            return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}#{self.parts.fragment}'
+            fragment = f'#{self.parts.fragment}'
         
-        return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}'
-
-    # def __format_url(self, url: str, base_url: str):
-    #     """
-    #     Format the URL properly
-    #     :param url: new URL
-    #     :base_url: original URL
-    #     :return: 
-    #         - original URL if the new one contains only \"#\"
-    #         - original URL concatenate with current URL if the new one starts with \"/\"
-    #         - new URL if it starts with \"http\"
-    #         - concatenation of original URL + \"/\" + new URL, otherwise
-    #     """
-
-    #     if '#' == url:
-    #         return base_url
-        
-    #     if url.startswith('/'):
-    #         if base_url.endswith('/'):
-    #             return f'{base_url[:-1]}{url}'
-    #         return f'{base_url}{url}'
-        
-    #     if url.startswith('http'):
-    #         return f'{url}'
-        
-    #     return f'{base_url}/{url}'
+        return f'{self.parts.scheme}://{self.parts.netloc}{self.parts.path}{queries}{fragment}'
     
-    def is_same_resource(self, second_url: URL):
+    def is_same_resource(self, second_url: URL) -> bool:
         """
         Check if two URLs are the same
         :param second_url: second URL
@@ -112,7 +78,7 @@ class URL:
         
         return False
 
-    def is_same_domain(self, second_url: URL):
+    def is_same_domain(self, second_url: URL) -> bool:
         """
         Check if two URLs have the same domain
         :param second_url: second URL
@@ -130,10 +96,10 @@ class URL:
 
         return False
     
-    def is_fuzzable(self):
+    def is_fuzzable(self) -> bool:
         """
         Return if an URL can be fuzzable
         :return: True if the URL contains a set of parameters, False otherwise
         """
 
-        return self.parts.query
+        return '' != self.parts.query

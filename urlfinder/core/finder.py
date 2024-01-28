@@ -61,33 +61,68 @@ class Finder:
                 continue
 
             bsoup = BeautifulSoup(response.text, 'html.parser')
-            urls_list = bsoup.findAll('a')
+            self.__search_tags_a(bsoup)
+            self.__search_tags_form(bsoup)
 
-            for url in urls_list:
-                if not url.get('href'): # skip empty value
-                    continue
+    def __update_urls_set(self, url_parser: URLParser):
+        """
+        Update the set of URLs adding a new parsed URL
 
-                url_parser = URLParser(url.get('href'), self.base_url.get_url())
+        :param url_parser: parser containing the parts of the URL 
+        """
+        
+        try:
+            new_url = URL(url_parser.get_parts(), self.base_url.get_url())
+        except AttributeError as e:
+            return
+        
+        if new_url.get_url(fuzz_parameters=True) in self.all_urls:
+            return
 
-                if url_parser.is_mail():
-                    mail = Mail(url_parser.get_parts())
-                    if mail not in self.mails:
-                        self.mails.add(mail)
-                        self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME, mail.get_mail())
-                    continue
+        if not self.only_same_domain or (self.only_same_domain and self.base_url.is_same_domain(new_url)):
+            logging.info(f'Found link -- {new_url.get_url()}')
+            logging.info(f'Add link to visit -- {new_url.get_url()}')
+            self.urls_to_visit.add(new_url)
 
-                try:
-                    new_url = URL(url_parser.get_parts(), self.base_url.get_url())
-                except AttributeError as e:
-                    continue
-                
-                if new_url.get_url(fuzz_parameters=True) in self.all_urls:
-                    continue
+            # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
+            self.all_urls.add(new_url.get_url(fuzz_parameters=True))
+    
+    def __search_tags_a(self, bsoup: BeautifulSoup):
+        """
+        Retrieve action URL from a tags
+        
+        :param bsoup: BeautifulSoup instance containing the content of the page
+        """
 
-                if not self.only_same_domain or (self.only_same_domain and self.base_url.is_same_domain(new_url)):
-                    logging.info(f'Found link -- {new_url.get_url()}')
-                    logging.info(f'Add link to visit -- {new_url.get_url()}')
-                    self.urls_to_visit.add(new_url)
+        urls_list = bsoup.findAll('a')
 
-                    # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
-                    self.all_urls.add(new_url.get_url(fuzz_parameters=True))
+        for url in urls_list:
+            if not url.get('href'): # skip empty value
+                continue
+
+            url_parser = URLParser(url.get('href'), self.base_url.get_url())
+
+            if url_parser.is_mail():
+                mail = Mail(url_parser.get_parts())
+                if mail not in self.mails:
+                    self.mails.add(mail)
+                    self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME, mail.get_mail())
+                continue
+
+            self.__update_urls_set(url_parser)
+    
+    def __search_tags_form(self, bsoup: BeautifulSoup):
+        """
+        Retrieve action URL from form tags
+        
+        :param bsoup: BeautifulSoup instance containing the content of the page
+        """
+        
+        forms_list = bsoup.findAll('form')
+
+        for form in forms_list:
+            if not form.get('action'): # skip empty value
+                continue
+
+            url_parser = URLParser(form.get('action'), self.base_url.get_url())
+            self.__update_urls_set(url_parser)

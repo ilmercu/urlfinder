@@ -10,6 +10,10 @@ class URLParserEnum(Enum):
     HTTPS_PROTOCOL        = 'https'
 
 class URLParser:
+    """
+    URL parsing class
+    """
+    
     def __init__(self, url: str, base_url: str=''):
         self.url = url
         if base_url:
@@ -107,5 +111,12 @@ class URLParser:
         return fullmatch(URLParserEnum.MAIL_REGEX.value, self.get_parts().path)
     
     def __reparse(self, url: str) -> ParseResult:
+        """
+        Set again the url and parse it
+        
+        :param url: changed URL
+        :return: ParseResult instance containing the parts of the URL
+        """
+        
         self.url = url
         self.parts = URLParser.parse(url)
