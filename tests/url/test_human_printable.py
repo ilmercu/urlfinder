@@ -1,7 +1,7 @@
 import unittest
 
 from urlfinder.core.url import URL
-from core.url_parser import URLParser
+from urlfinder.core.url_parser import URLParser
 
 class TestHumanPrintable(unittest.TestCase):
     def test_success_print_main_url(self):
