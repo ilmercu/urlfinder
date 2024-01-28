@@ -21,6 +21,7 @@ class Mail:
     def get_mail(self) -> str:
         """
         Get human readble mail
+        
         :return: human readable mail
         """
 

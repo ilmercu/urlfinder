@@ -12,7 +12,7 @@ class ScopeParser:
     def parse(self) -> ParseResult:
         """
         Parse an URL
-        :param url: URL to parse
+
         :return: parts of URL
         """
         
@@ -24,6 +24,7 @@ class ScopeParser:
     def get_parts(self) -> ParseResult:
         """
         Get parts of parsed URL
+
         :return: parts of URL
         """
         
