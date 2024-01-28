@@ -96,10 +96,13 @@ class URL:
 
         return False
     
-    def is_fuzzable(self) -> bool:
+    def is_fuzzable(self):
         """
         Return if an URL can be fuzzable
         :return: True if the URL contains a set of parameters, False otherwise
         """
-
-        return '' != self.parts.query
+        
+        if self.parts.query:
+            return True
+        
+        return False

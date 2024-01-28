@@ -72,7 +72,7 @@ class Finder:
         """
         
         try:
-            new_url = URL(url_parser.get_parts(), self.base_url.get_url())
+            new_url = URL(url_parser.get_parts())
         except AttributeError as e:
             return
         
