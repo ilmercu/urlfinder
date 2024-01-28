@@ -13,6 +13,8 @@ class OutputManager:
     def __init__(self, domain: str):
         """
         Return new OutputManager instance creating also destination filepaths
+
+        :param: string representing the domain
         """
 
         self.base_path = f'{OutputManagerEnum.BASE_PATH.value}/{domain}/'
@@ -46,6 +48,7 @@ class OutputManager:
     def write(self, filepath: OutputManagerEnum, line: str):
         """
         Write content inside a file
+        
         :parameter filepath: destination file
         :parameter line: content to write
         """

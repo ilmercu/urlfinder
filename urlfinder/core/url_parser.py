@@ -15,6 +15,13 @@ class URLParser:
     """
     
     def __init__(self, url: str, base_url: str=''):
+        """
+        Return new URLParser instance
+        
+        :param url: URL to parse
+        :param base_url: base url (input from the user)
+        """
+        
         self.url = url
         if base_url:
             self.base_url = URLParser.parse(base_url)
@@ -25,6 +32,7 @@ class URLParser:
     def parse(cls, url: str) -> ParseResult:
         """
         Parse an URL
+
         :param url: URL to parse
         :return: parts of URL
         """
@@ -37,6 +45,7 @@ class URLParser:
     def __format_url(self) -> str:
         """
         Format the URL properly
+
         :param url: new URL
         :base_url: original URL
         :return: formatted URL
@@ -81,6 +90,7 @@ class URLParser:
     def get_parts(self) -> ParseResult:
         """
         Get parts of parsed URL
+
         :return: parts of URL
         """
         
@@ -89,6 +99,7 @@ class URLParser:
     def is_url(self) -> bool:
         """
         Check if the input is an URL
+
         :return: True if the input is a valid URL, False otherwise
         """
 
@@ -102,6 +113,7 @@ class URLParser:
     def is_mail(self) -> bool:
         """
         Check if the input is a mail
+
         :return: True if the input is a valid mail, False otherwise
         """
 

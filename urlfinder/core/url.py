@@ -10,7 +10,8 @@ class URL:
     def __init__(self, parts: ParseResult):
         """
         Return new URL instance
-        :param url: new URL
+
+        :param parts: parts of the new URL
         """
         
         self.parts = parts
@@ -31,6 +32,7 @@ class URL:
     def get_url(self, fuzz_parameters: bool=False) -> str:
         """
         Get human readble or fuzzed format URL
+
         :param fuzz_parameters: True if the return value will contain replaced query values, False otherwise
         :return: human readable URL or fuzzed parameters URL 
         """
@@ -62,6 +64,7 @@ class URL:
     def is_same_resource(self, second_url: URL) -> bool:
         """
         Check if two URLs are the same
+
         :param second_url: second URL
         :return: True if two resources are the same, False otherwise
         """
@@ -85,6 +88,7 @@ class URL:
     def is_same_domain(self, second_url: URL) -> bool:
         """
         Check if two URLs have the same domain
+
         :param second_url: second URL
         :return: True if two resources have the same domain, False otherwise
         """
@@ -103,6 +107,7 @@ class URL:
     def is_fuzzable(self):
         """
         Return if an URL can be fuzzable
+
         :return: True if the URL contains a set of parameters, False otherwise
         """
         
@@ -111,7 +116,14 @@ class URL:
         
         return False
 
-    def is_in_scope(self, scope_domains):
+    def is_in_scope(self, scope_domains: set):
+        """
+        Return if an URL is in scope
+        
+        :param scope_domains: domains in scope
+        :return: True if the URL is in scope, False otherwise
+        """
+        
         url_domain = URL.extract_domain(self)
 
         for domain in scope_domains:
