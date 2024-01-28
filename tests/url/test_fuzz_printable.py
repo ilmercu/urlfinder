@@ -1,7 +1,7 @@
 import unittest
 
 from urlfinder.core.url import URL
-from urlfinder.core.url_parser import URLParser
+from core.url_parser import URLParser
 
 class TestFuzzPrintable(unittest.TestCase):
     def test_success_print_main_url(self):

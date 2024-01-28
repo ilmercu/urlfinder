@@ -15,16 +15,17 @@ logging.basicConfig(
 
 
 class Finder:
-    def __init__(self, base_url: URL, all_domains: bool, output_manager: OutputManager):
+    def __init__(self, base_url: URL, scope_domains: set, output_manager: OutputManager):
         """
         Return new Finder instance
+
         :parameter base_url: URL object representing the base URL (user input)
-        :parameter all_domains: bool representing if the tool must retrieve URLs coming from an infinite set of domains
+        :parameter scope_domains: domains in scope
         :parameter output_manager: OutputManager instance which handles output files
         """
         
         self.base_url = base_url
-        self.only_same_domain = not all_domains
+        self.scope_domains = scope_domains
         self.output_manager = output_manager
 
         # URLs to visit
@@ -49,10 +50,12 @@ class Finder:
 
             current_url = self.urls_to_visit.pop()
             logging.info(f'Starting visiting {current_url.get_url()}')
-            self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME, current_url.get_url())
+            if (not self.scope_domains and self.base_url.is_same_domain(current_url)) or \
+            current_url.is_in_scope(self.scope_domains):
+                self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME, current_url.get_url())
 
-            if current_url.is_fuzzable():
-                self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME, current_url.get_url(fuzz_parameters=True))
+                if current_url.is_fuzzable():
+                    self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME, current_url.get_url(fuzz_parameters=True))
 
             try:
                 response = requests.get(current_url)
@@ -79,7 +82,9 @@ class Finder:
         if new_url.get_url(fuzz_parameters=True) in self.all_urls:
             return
 
-        if not self.only_same_domain or (self.only_same_domain and self.base_url.is_same_domain(new_url)):
+        # if no scope domains were specified and the URL is in base domain or the domain is in scope
+        if (not self.scope_domains and self.base_url.is_same_domain(new_url)) or \
+            new_url.is_in_scope(self.scope_domains):
             logging.info(f'Found link -- {new_url.get_url()}')
             logging.info(f'Add link to visit -- {new_url.get_url()}')
             self.urls_to_visit.add(new_url)

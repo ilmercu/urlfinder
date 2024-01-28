@@ -22,7 +22,7 @@ class URLParser:
         self.__format_url()
 
     @classmethod
-    def parse(self, url: str) -> ParseResult:
+    def parse(cls, url: str) -> ParseResult:
         """
         Parse an URL
         :param url: URL to parse

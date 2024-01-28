@@ -1,13 +1,23 @@
 from urlfinder.core.url import URL
 from urlfinder.core.finder import Finder
-from urlfinder.core.url_parser import URLParser
+from core.url_parser import URLParser
+from core.scope_parser import ScopeParser
 from urlfinder.core.output_manager import OutputManager
 import click
 
 @click.command()
 @click.option('--url', '-u', help='URL', required=True)
-@click.option('--all-domain', '-a', help='Scan all domains   [default: False]', is_flag=True, show_default=True, default=False)
-def main(url, all_domain):    
+@click.option('--domains', '-d', help='List of comma separated scope domains')
+def main(url, domains):
+    scope_domains = set()  
+    if domains:
+        domains = domains.replace(' ', '')
+
+        for domain in domains.split(','):
+            url_parser = ScopeParser(url=domain)
+            new_domain = URL(url_parser.get_parts())
+            scope_domains.add(new_domain)
+
     try:
         url_parser = URLParser(url)
         if not url_parser.is_url():
@@ -20,7 +30,7 @@ def main(url, all_domain):
     output_manager = OutputManager(url_parser.get_parts().netloc)
 
     base_url = URL(url_parser.get_parts())
-    finder = Finder(base_url, all_domain, output_manager)
+    finder = Finder(base_url, scope_domains, output_manager)
     finder.find()
 
 if __name__ == '__main__':

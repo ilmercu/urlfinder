@@ -1,7 +1,7 @@
 import unittest
 
 from urlfinder.core.url import URL
-from urlfinder.core.url_parser import URLParser
+from core.url_parser import URLParser
 
 class TestFuzzable(unittest.TestCase):
     def test_no_parameter(self):

@@ -23,6 +23,10 @@ class URL:
     
     def __str__(self):
         return self.get_url()
+    
+    @classmethod
+    def extract_domain(cls, url: URL):
+        return domain_extractor(url.parts.netloc)
 
     def get_url(self, fuzz_parameters: bool=False) -> str:
         """
@@ -85,8 +89,8 @@ class URL:
         :return: True if two resources have the same domain, False otherwise
         """
 
-        second_url_domain = domain_extractor(second_url.parts.netloc)
-        url_domain = domain_extractor(self.parts.netloc)
+        second_url_domain = URL.extract_domain(second_url)
+        url_domain = URL.extract_domain(self)
 
         if second_url_domain.subdomain == url_domain.subdomain and second_url_domain.domain == url_domain.domain and second_url_domain.suffix == url_domain.suffix:
             return True
@@ -106,3 +110,21 @@ class URL:
             return True
         
         return False
+
+    def is_in_scope(self, scope_domains):
+        url_domain = URL.extract_domain(self)
+
+        for domain in scope_domains:
+            if self.is_same_domain(domain):
+                return True
+            
+            # check for wildcard
+            scope_domain = URL.extract_domain(domain)
+
+            if '*' == scope_domain.subdomain and \
+                url_domain.domain == scope_domain.domain and \
+                url_domain.suffix == scope_domain.suffix:
+                return True
+
+        return False
+        
