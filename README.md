@@ -4,7 +4,7 @@ urlfinder is an enumeration tool which allows to find recursively all the URLs s
 + href attribute from `<a>` tags
 + action attribute from `<form>` tags
 
-The tool can retrieve only URLs coming from the same domain of the base URL or retrieve the entire set of URLs in a page considering infinite domains
+The tool can retrieve only URLs coming from the same domain of the base URL or retrieve the entire set of URLs based on domains in scope
 
 ## How To Execute
 
@@ -34,8 +34,16 @@ pip install -e .
 
 ### Execute tool
 
+#### Execution without scope domains
+
 ```bash
 python urlfinder -u <BASE-URL>
+```
+
+#### Execution with scope domains (separated with comma)
+
+```bash
+python urlfinder -u <BASE-URL> -d <DOMAIN1>,<DOMAIN2>
 ```
 
 ## Improvements
