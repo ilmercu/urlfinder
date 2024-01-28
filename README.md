@@ -43,7 +43,7 @@ python urlfinder -u <BASE-URL>
 #### Execution with scope domains (separated with comma)
 
 ```bash
-python urlfinder -u <BASE-URL> -d <DOMAIN1>,<DOMAIN2>
+python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN1>,<DOMAIN2>,*.<DOMAIN3>
 ```
 
 ## Improvements
