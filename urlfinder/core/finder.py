@@ -15,18 +15,20 @@ logging.basicConfig(
 
 
 class Finder:
-    def __init__(self, base_url: URL, scope_domains: set, output_manager: OutputManager):
+    def __init__(self, base_url: URL, scope_domains: set, output_manager: OutputManager, check_status: bool):
         """
         Return new Finder instance
 
-        :parameter base_url: URL object representing the base URL (user input)
-        :parameter scope_domains: domains in scope
-        :parameter output_manager: OutputManager instance which handles output files
+        :param base_url: URL object representing the base URL (user input)
+        :param scope_domains: domains in scope
+        :param output_manager: OutputManager instance which handles output files
+        :param check_status: get only URLs with status code in [200, 400)
         """
         
         self.base_url = base_url
         self.scope_domains = scope_domains
         self.output_manager = output_manager
+        self.check_status = check_status
 
         # URLs to visit
         self.urls_to_visit = set()
@@ -59,8 +61,14 @@ class Finder:
 
             try:
                 response = requests.get(current_url)
+
+                if self.check_status and not response.ok:
+                    continue
             except requests.exceptions.InvalidSchema:
                 print(f"Can't send request to an invalid URL. URL: {current_url}")
+                continue
+            except requests.exceptions.ConnectionError:
+                print(f"Failed to resolve {current_url}")
                 continue
 
             bsoup = BeautifulSoup(response.text, 'html.parser')

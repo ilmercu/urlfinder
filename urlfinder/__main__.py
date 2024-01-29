@@ -8,7 +8,8 @@ import click
 @click.command()
 @click.option('--url', '-u', help='URL', required=True)
 @click.option('--domains', '-d', help='List of comma separated scope domains')
-def main(url, domains):
+@click.option('--check-status', '-cs', help='Get only URLs with status code between 200 and 400', is_flag=True, default=True)
+def main(url, domains, check_status):
     scope_domains = set()  
     if domains:
         domains = domains.replace(' ', '')
@@ -30,7 +31,7 @@ def main(url, domains):
     output_manager = OutputManager(url_parser.get_parts().netloc)
 
     base_url = URL(url_parser.get_parts())
-    finder = Finder(base_url, scope_domains, output_manager)
+    finder = Finder(base_url, scope_domains, output_manager, check_status)
     finder.find()
 
 if __name__ == '__main__':
