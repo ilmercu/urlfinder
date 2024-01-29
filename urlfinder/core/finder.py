@@ -1,17 +1,17 @@
 import requests
-import queue
-import logging
 from bs4 import BeautifulSoup
+from enum import Enum
 
 from .url import URL
 from .mail import Mail
 from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
 
-logging.basicConfig(
-    level=logging.INFO, 
-    format='%(levelname)s - %(message)s'
-)
+
+class FinderColorEnum(Enum):
+    SUCCESS_GREEN = '\033[92m'
+    ERROR_RED     = '\033[91m'
+    END_COLOR     = '\033[0m'
 
 
 class Finder:
@@ -51,7 +51,7 @@ class Finder:
                 break
 
             current_url = self.urls_to_visit.pop()
-            logging.info(f'Starting visiting {current_url.get_url()}')
+
             if (not self.scope_domains and self.base_url.is_same_domain(current_url)) or \
             current_url.is_in_scope(self.scope_domains):
                 self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME, current_url.get_url())
@@ -63,6 +63,7 @@ class Finder:
                 response = requests.get(current_url)
 
                 if self.check_status and not response.ok:
+                    print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
                     continue
             except requests.exceptions.InvalidSchema:
                 print(f"Can't send request to an invalid URL. URL: {current_url}")
@@ -70,6 +71,8 @@ class Finder:
             except requests.exceptions.ConnectionError:
                 print(f"Failed to resolve {current_url}")
                 continue
+
+            print(f'{FinderColorEnum.SUCCESS_GREEN.value}{current_url}{FinderColorEnum.END_COLOR.value}')
 
             bsoup = BeautifulSoup(response.text, 'html.parser')
             self.__search_tags_a(bsoup)
@@ -93,8 +96,6 @@ class Finder:
         # if no scope domains were specified and the URL is in base domain or the domain is in scope
         if (not self.scope_domains and self.base_url.is_same_domain(new_url)) or \
             new_url.is_in_scope(self.scope_domains):
-            logging.info(f'Found link -- {new_url.get_url()}')
-            logging.info(f'Add link to visit -- {new_url.get_url()}')
             self.urls_to_visit.add(new_url)
 
             # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
