@@ -50,8 +50,6 @@ python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN-1>,<DOMAIN-2>,*.<DOMAIN-
 
 + Retrieve URLs inside <script> tags
 + Add option to encode the URL
-+ Add option to check status code from response
-  + print the URL and change the color based on the status code
 
 ## Disclaimer
 
