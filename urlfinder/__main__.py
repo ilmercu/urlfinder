@@ -8,7 +8,7 @@ import click
 @click.command()
 @click.option('--url', '-u', help='URL', required=True)
 @click.option('--domains', '-d', help='List of comma separated scope domains')
-@click.option('--check-status', '-cs', help='Get only URLs with status code between 200 and 400', is_flag=True, default=True)
+@click.option('--check-status', '-cs', help='Get only URLs with status code between 200 and 400     [default: False]', is_flag=True, default=False)
 def main(url, domains, check_status):
     scope_domains = set()  
     if domains:
