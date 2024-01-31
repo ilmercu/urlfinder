@@ -103,6 +103,27 @@ class TestParseURL(unittest.TestCase):
         url_1 = 'https:/test'
         with self.assertRaises(AttributeError): 
             URLParser(url_1)
+
+    def test_success_with_single_dot_relative_path(self):
+        base_url = 'https://jklqwe.com'
+        url_1 = './test'
+        url_parser = URLParser(url_1, base_url)
+        url_obj_1 = URL(url_parser.get_parts())
+        self.assertEqual(url_obj_1.get_url(), f'{base_url}{url_1[1:]}')
+
+    def test_success_with_double_dot_relative_path(self):
+        base_url = 'https://jklqwe.com'
+        url_1 = '../test'
+        url_parser = URLParser(url_1, base_url)
+        url_obj_1 = URL(url_parser.get_parts())
+        self.assertEqual(url_obj_1.get_url(), f'{base_url}/{url_1}')
+
+    def test_success_with_slash_and_double_dot_relative_path(self):
+        base_url = 'https://jklqwe.com/'
+        url_1 = '../test'
+        url_parser = URLParser(url_1, base_url)
+        url_obj_1 = URL(url_parser.get_parts())
+        self.assertEqual(url_obj_1.get_url(), f'{base_url}{url_1}')
         
 if __name__ == '__main__':
     unittest.main()

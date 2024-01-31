@@ -75,8 +75,8 @@ class Finder:
             print(f'{FinderColorEnum.SUCCESS_GREEN.value}{current_url}{FinderColorEnum.END_COLOR.value}')
 
             bsoup = BeautifulSoup(response.text, 'html.parser')
-            self.__search_tags_a(bsoup)
-            self.__search_tags_form(bsoup)
+            self.__search_tags_a(bsoup, current_url)
+            self.__search_tags_form(bsoup, current_url)
 
     def __update_urls_set(self, url_parser: URLParser):
         """
@@ -89,7 +89,7 @@ class Finder:
             new_url = URL(url_parser.get_parts())
         except AttributeError as e:
             return
-        
+
         if new_url.get_url(fuzz_parameters=True) in self.all_urls:
             return
 
@@ -101,11 +101,12 @@ class Finder:
             # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
             self.all_urls.add(new_url.get_url(fuzz_parameters=True))
     
-    def __search_tags_a(self, bsoup: BeautifulSoup):
+    def __search_tags_a(self, bsoup: BeautifulSoup, current_base_url: URL):
         """
         Retrieve action URL from a tags
         
         :param bsoup: BeautifulSoup instance containing the content of the page
+        :param current_base_url: current URL which will be used as the base URL or its children
         """
 
         urls_list = bsoup.findAll('a')
@@ -114,7 +115,7 @@ class Finder:
             if not url.get('href'): # skip empty value
                 continue
 
-            url_parser = URLParser(url.get('href'), self.base_url.get_url())
+            url_parser = URLParser(url.get('href'), current_base_url.get_url())
 
             if url_parser.is_mail():
                 mail = Mail(url_parser.get_parts())
@@ -125,11 +126,12 @@ class Finder:
 
             self.__update_urls_set(url_parser)
     
-    def __search_tags_form(self, bsoup: BeautifulSoup):
+    def __search_tags_form(self, bsoup: BeautifulSoup, current_base_url: URL):
         """
         Retrieve action URL from form tags
         
         :param bsoup: BeautifulSoup instance containing the content of the page
+        :param current_base_url: current URL which will be used as the base URL or its children
         """
         
         forms_list = bsoup.findAll('form')
@@ -138,5 +140,5 @@ class Finder:
             if not form.get('action'): # skip empty value
                 continue
 
-            url_parser = URLParser(form.get('action'), self.base_url.get_url())
+            url_parser = URLParser(form.get('action'), current_base_url.get_url())
             self.__update_urls_set(url_parser)
