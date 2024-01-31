@@ -68,6 +68,13 @@ class URLParser:
         else:
             netloc = self.parts.netloc
 
+        path = self.parts.path
+        if path.startswith('./'):
+            netloc += '/'
+            path = path[2:]
+        elif path.startswith('../'):
+            netloc += '/'
+
         queries = ''
         for query in self.parts.query:
             query_parameter = f'{query[0]}='
@@ -83,9 +90,9 @@ class URLParser:
             fragment = f'#{self.parts.fragment}'
 
         if queries:
-            return self.__reparse(f'{scheme}://{netloc}{self.parts.path}?{queries}{fragment}')
+            return self.__reparse(f'{scheme}://{netloc}{path}?{queries}{fragment}')
         
-        return self.__reparse(f'{scheme}://{netloc}{self.parts.path}{fragment}')
+        return self.__reparse(f'{scheme}://{netloc}{path}{fragment}')
 
     def get_parts(self) -> ParseResult:
         """
