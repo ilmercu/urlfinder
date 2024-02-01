@@ -8,6 +8,8 @@ class URLParserEnum(Enum):
     MAIL_REGEX            = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     HTTP_PROTOCOL         = 'http'
     HTTPS_PROTOCOL        = 'https'
+    PHONE_PROTOCOL        = 'tel'
+    PHONE_REGEX           = '\+?\d+'
 
 class URLParser:
     """
@@ -39,8 +41,25 @@ class URLParser:
         
         parts = urlparse(url)
         _query = parse_qsl(parts.query, keep_blank_values=True)
-        _path = unquote_plus(parts.path)
+
+        _path = parts.path.replace(' ', '')
+        if URLParserEnum.PHONE_PROTOCOL.value == parts.scheme and URLParser.__is_phone_number(_path):
+            _path = _path
+        else:
+            _path = unquote_plus(parts.path)
+
         return parts._replace(query=_query, path=_path)
+    
+    @classmethod
+    def __is_phone_number(cls, phone_number: str):
+        """
+        Check if a string is a phone number
+
+        :param phone_number: phone number
+        :return: True if the string is a phone number, False otherwise 
+        """
+
+        return fullmatch(URLParserEnum.PHONE_REGEX.value, phone_number)
 
     def __format_url(self) -> str:
         """
@@ -51,7 +70,7 @@ class URLParser:
         :return: formatted URL
         """
 
-        if self.is_mail():
+        if self.is_mail() or self.is_phone():
             return self.parts
 
         if '' == self.parts.scheme:
@@ -128,6 +147,18 @@ class URLParser:
             return False
         
         return fullmatch(URLParserEnum.MAIL_REGEX.value, self.get_parts().path)
+
+    def is_phone(self) -> bool:
+        """
+        Check if the URL is a phone number
+
+        :return: True if the input is a valid phone number, False otherwise
+        """
+
+        if '' != self.get_parts().scheme and URLParserEnum.PHONE_PROTOCOL.value != self.get_parts().scheme:
+            return False
+        
+        return URLParser.__is_phone_number(self.get_parts().path)
     
     def __reparse(self, url: str) -> ParseResult:
         """
