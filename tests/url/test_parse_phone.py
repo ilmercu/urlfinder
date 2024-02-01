@@ -1,6 +1,6 @@
 import unittest
 
-from urlfinder.core.phone import Phone
+from urlfinder.core.elements.phone import Phone
 from urlfinder.core.url_parser import URLParser
 
 class TestParsePhone(unittest.TestCase):

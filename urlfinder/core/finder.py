@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from enum import Enum
 
-from .url import URL
-from .mail import Mail
-from .phone import Phone
+from .elements.url import URL
+from .elements.mail import Mail
+from .elements.phone import Phone
 from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
 
