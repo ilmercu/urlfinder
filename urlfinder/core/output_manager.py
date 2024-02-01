@@ -3,10 +3,11 @@ from os import makedirs, path
 from enum import Enum
 
 class OutputManagerEnum(Enum):
-    BASE_PATH = './output'
-    URLS_LIST_OUTPUT_FILENAME = 'urls-complete-list.txt'
+    BASE_PATH                     = './output'
+    URLS_LIST_OUTPUT_FILENAME     = 'urls-complete-list.txt'
     FUZZABLE_URLS_OUTPUT_FILENAME = 'fuzzable-urls.txt'
-    MAIL_OUTPUT_FILENAME = 'mails.txt'
+    MAIL_OUTPUT_FILENAME          = 'mails.txt'
+    PHONE_OUTPUT_FILENAME         = 'phones.txt'
 
 
 class OutputManager:
@@ -28,7 +29,8 @@ class OutputManager:
         filepaths = [ 
             f'{self.base_path}/{OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME.value}', 
             f'{self.base_path}/{OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME.value}', 
-            f'{self.base_path}/{OutputManagerEnum.MAIL_OUTPUT_FILENAME.value}'
+            f'{self.base_path}/{OutputManagerEnum.MAIL_OUTPUT_FILENAME.value}',
+            f'{self.base_path}/{OutputManagerEnum.PHONE_OUTPUT_FILENAME.value}'
         ]
 
         try:
