@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from enum import Enum
+import logging
 
 from .elements.url import URL
 from .elements.mail import Mail
@@ -26,6 +27,11 @@ class Finder:
         :param check_status: get only URLs with status code in [200, 400)
         """
         
+        logging.basicConfig(filename=f'{output_manager.base_path}{OutputManagerEnum.LOG_OUTPUT_FILENAME.value}', format='%(levelname)-8s %(message)s',
+            datefmt='%Y-%m-%d:%H:%M:%S',
+            level=logging.INFO)
+        self.logger = logging.getLogger(f'{output_manager.base_path}{OutputManagerEnum.LOG_OUTPUT_FILENAME.value}')
+
         self.base_url = base_url
         self.scope_domains = scope_domains
         self.output_manager = output_manager
@@ -55,6 +61,7 @@ class Finder:
                 break
 
             current_url = self.urls_to_visit.pop()
+            self.logger.info(f'Scanning {current_url}')
 
             if (not self.scope_domains and self.base_url.is_same_domain(current_url)) or \
             current_url.is_in_scope(self.scope_domains):
@@ -67,12 +74,15 @@ class Finder:
                 response = requests.get(current_url)
 
                 if self.check_status and not response.ok:
+                    self.logger.warning(f'{current_url} status code: {response.status_code}')
                     print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
                     continue
             except requests.exceptions.InvalidSchema:
+                self.logger.error(f"Can't send request to an invalid URL. URL: {current_url}")
                 print(f"Can't send request to an invalid URL. URL: {current_url}")
                 continue
             except requests.exceptions.ConnectionError:
+                self.logger.error(f'Failed to resolve {current_url}')
                 print(f"Failed to resolve {current_url}")
                 continue
 
@@ -119,6 +129,8 @@ class Finder:
             if not url.get('href'): # skip empty value
                 continue
 
+            self.logger.info(f'Found a href value: {url.get("href")}')
+
             url_parser = URLParser(url.get('href'), current_base_url.get_url())
 
             if url_parser.is_mail():
@@ -150,6 +162,8 @@ class Finder:
         for form in forms_list:
             if not form.get('action'): # skip empty value
                 continue
+
+            self.logger.info(f'Found form action value: {form.get("action")}')
 
             url_parser = URLParser(form.get('action'), current_base_url.get_url())
             self.__update_urls_set(url_parser)

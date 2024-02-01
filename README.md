@@ -17,6 +17,7 @@ urlfinder produces four files:
 + `fuzzable-urls.txt`: stores the list of URLs containing `FUZZX` keywords
 + `mails.txt`: stores the list of email addresses
 + `phones.txt`: stores the list of phone numbers
++ `site-map.log`: stores the site map. It can be used to reconstruct the path to get a specific URL
 
 The tool can retrieve only URLs coming from the same domain of URL passed as argument or retrieve the entire set of URLs based on domains in scope
 

@@ -4,10 +4,16 @@ from enum import Enum
 
 class OutputManagerEnum(Enum):
     BASE_PATH                     = './output'
+
     URLS_LIST_OUTPUT_FILENAME     = 'urls-complete-list.txt'
     FUZZABLE_URLS_OUTPUT_FILENAME = 'fuzzable-urls.txt'
     MAIL_OUTPUT_FILENAME          = 'mails.txt'
     PHONE_OUTPUT_FILENAME         = 'phones.txt'
+    LOG_OUTPUT_FILENAME           = 'site-map.log'
+
+    @classmethod
+    def values(cls):
+        return [ item.value for item in cls if cls.BASE_PATH != item ]
 
 
 class OutputManager:
@@ -26,15 +32,11 @@ class OutputManager:
         Create destination filepaths
         """
 
-        filepaths = [ 
-            f'{self.base_path}/{OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME.value}', 
-            f'{self.base_path}/{OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME.value}', 
-            f'{self.base_path}/{OutputManagerEnum.MAIL_OUTPUT_FILENAME.value}',
-            f'{self.base_path}/{OutputManagerEnum.PHONE_OUTPUT_FILENAME.value}'
-        ]
+        filepaths = OutputManagerEnum.values()
 
         try:
             for filepath in filepaths:
+                filepath = f'{self.base_path}{filepath}'
                 makedirs(path.dirname(filepath), exist_ok=True)
                 
                 # create empty file
