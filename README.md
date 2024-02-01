@@ -12,10 +12,11 @@ urlfinder retrieves:
 
 Once an URL is found, query parameters (if any) are substituted with keywords `FUZZ0`, `FUZZ1`, etc. This allows to easily replace them injecting payloads using a fuzzing tool
 
-urlfinder produces three files:
+urlfinder produces four files:
 + `url-complete-list.txt`: stores the list of all the original URLs found
 + `fuzzable-urls.txt`: stores the list of URLs containing `FUZZX` keywords
 + `mails.txt`: stores the list of email addresses
++ `phones.txt`: stores the list of phone numbers
 
 The tool can retrieve only URLs coming from the same domain of URL passed as argument or retrieve the entire set of URLs based on domains in scope
 
@@ -82,7 +83,6 @@ python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN-1>,<DOMAIN-2>,*.<DOMAIN-
 
 ## Improvements
 
-+ Retrieve phone numbers from <a> tags
 + Retrieve URLs inside <script> tags
 + Add option to encode the URL
 

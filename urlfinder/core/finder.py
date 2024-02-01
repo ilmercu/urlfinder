@@ -4,6 +4,7 @@ from enum import Enum
 
 from .url import URL
 from .mail import Mail
+from .phone import Phone
 from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
 
@@ -40,6 +41,9 @@ class Finder:
 
         # mail set
         self.mails = set()
+
+        # phone set
+        self.phones = set()
 
     def find(self):
         """
@@ -122,6 +126,13 @@ class Finder:
                 if mail not in self.mails:
                     self.mails.add(mail)
                     self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME, mail.get_mail())
+                continue
+
+            if url_parser.is_phone():
+                phone = Phone(url_parser.get_parts())
+                if phone not in self.phones:
+                    self.phones.add(phone)
+                    self.output_manager.write(OutputManagerEnum.PHONE_OUTPUT_FILENAME, phone.get_phone())
                 continue
 
             self.__update_urls_set(url_parser)
