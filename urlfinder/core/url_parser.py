@@ -16,18 +16,22 @@ class URLParser:
     URL parsing class
     """
     
-    def __init__(self, url: str, base_url: str=''):
+    def __init__(self, url: str, base_url: str='', is_scope_domain: bool=False):
         """
         Return new URLParser instance
         
         :param url: URL to parse
         :param base_url: base url (input from the user)
+        :param is_scope_domain: True if parsing a scope domain
         """
         
-        self.url = url
+        # add protocol for scope domain
+        if is_scope_domain:
+            url = f'https://{url}'
+
         if base_url:
             self.base_url = URLParser.parse(base_url)
-        self.parts = URLParser.parse(self.url)
+        self.parts = URLParser.parse(url)
         self.__format_url()
 
     @classmethod
@@ -168,5 +172,4 @@ class URLParser:
         :return: ParseResult instance containing the parts of the URL
         """
         
-        self.url = url
         self.parts = URLParser.parse(url)

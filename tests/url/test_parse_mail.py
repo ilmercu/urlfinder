@@ -1,6 +1,6 @@
 import unittest
 
-from urlfinder.core.mail import Mail
+from urlfinder.core.elements.mail import Mail
 from urlfinder.core.url_parser import URLParser
 
 class TestMail(unittest.TestCase):
