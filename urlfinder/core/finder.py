@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 from enum import Enum
+import logging
 
-from .url import URL
-from .mail import Mail
-from .phone import Phone
+from .elements.url import URL
+#from .elements.mail import Mail
+from .elements.base_element import BaseElement
 from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
 
@@ -26,6 +27,11 @@ class Finder:
         :param check_status: get only URLs with status code in [200, 400)
         """
         
+        logging.basicConfig(filename=f'{output_manager.base_path}{OutputManagerEnum.LOG_OUTPUT_FILENAME.value}', format='%(levelname)-8s %(message)s',
+            datefmt='%Y-%m-%d:%H:%M:%S',
+            level=logging.INFO)
+        self.logger = logging.getLogger(f'{output_manager.base_path}{OutputManagerEnum.LOG_OUTPUT_FILENAME.value}')
+
         self.base_url = base_url
         self.scope_domains = scope_domains
         self.output_manager = output_manager
@@ -37,7 +43,7 @@ class Finder:
 
         # all URLs (visited + to visit) 
         self.all_urls = set()
-        self.all_urls.add(base_url.get_url(fuzz_parameters=True))
+        self.all_urls.add(base_url.get_value(fuzz_parameters=True))
 
         # mail set
         self.mails = set()
@@ -55,24 +61,28 @@ class Finder:
                 break
 
             current_url = self.urls_to_visit.pop()
+            self.logger.info(f'Scanning {current_url}')
 
             if (not self.scope_domains and self.base_url.is_same_domain(current_url)) or \
             current_url.is_in_scope(self.scope_domains):
-                self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME, current_url.get_url())
+                self.output_manager.write(OutputManagerEnum.URLS_LIST_OUTPUT_FILENAME, current_url.get_value())
 
                 if current_url.is_fuzzable():
-                    self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME, current_url.get_url(fuzz_parameters=True))
+                    self.output_manager.write(OutputManagerEnum.FUZZABLE_URLS_OUTPUT_FILENAME, current_url.get_value(fuzz_parameters=True))
 
             try:
                 response = requests.get(current_url)
 
                 if self.check_status and not response.ok:
+                    self.logger.warning(f'{current_url} status code: {response.status_code}')
                     print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
                     continue
             except requests.exceptions.InvalidSchema:
+                self.logger.error(f"Can't send request to an invalid URL. URL: {current_url}")
                 print(f"Can't send request to an invalid URL. URL: {current_url}")
                 continue
             except requests.exceptions.ConnectionError:
+                self.logger.error(f'Failed to resolve {current_url}')
                 print(f"Failed to resolve {current_url}")
                 continue
 
@@ -94,7 +104,7 @@ class Finder:
         except AttributeError as e:
             return
 
-        if new_url.get_url(fuzz_parameters=True) in self.all_urls:
+        if new_url.get_value(fuzz_parameters=True) in self.all_urls:
             return
 
         # if no scope domains were specified and the URL is in base domain or the domain is in scope
@@ -103,7 +113,7 @@ class Finder:
             self.urls_to_visit.add(new_url)
 
             # add fuzzed parameters in order to avoid duplications due to only parameter's values (e.g http://abc.com?test=1 and http://abc.com?test=2)
-            self.all_urls.add(new_url.get_url(fuzz_parameters=True))
+            self.all_urls.add(new_url.get_value(fuzz_parameters=True))
     
     def __search_tags_a(self, bsoup: BeautifulSoup, current_base_url: URL):
         """
@@ -119,20 +129,22 @@ class Finder:
             if not url.get('href'): # skip empty value
                 continue
 
-            url_parser = URLParser(url.get('href'), current_base_url.get_url())
+            self.logger.info(f'Found a href value: {url.get("href")}')
+
+            url_parser = URLParser(url.get('href'), current_base_url.get_value())
 
             if url_parser.is_mail():
-                mail = Mail(url_parser.get_parts())
+                mail = BaseElement(url_parser.get_parts())
                 if mail not in self.mails:
                     self.mails.add(mail)
-                    self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME, mail.get_mail())
+                    self.output_manager.write(OutputManagerEnum.MAIL_OUTPUT_FILENAME, mail.get_value())
                 continue
 
             if url_parser.is_phone():
-                phone = Phone(url_parser.get_parts())
+                phone = BaseElement(url_parser.get_parts())
                 if phone not in self.phones:
                     self.phones.add(phone)
-                    self.output_manager.write(OutputManagerEnum.PHONE_OUTPUT_FILENAME, phone.get_phone())
+                    self.output_manager.write(OutputManagerEnum.PHONE_OUTPUT_FILENAME, phone.get_value())
                 continue
 
             self.__update_urls_set(url_parser)
@@ -151,5 +163,7 @@ class Finder:
             if not form.get('action'): # skip empty value
                 continue
 
-            url_parser = URLParser(form.get('action'), current_base_url.get_url())
+            self.logger.info(f'Found form action value: {form.get("action")}')
+
+            url_parser = URLParser(form.get('action'), current_base_url.get_value())
             self.__update_urls_set(url_parser)

@@ -1,6 +1,6 @@
 import unittest
 
-from urlfinder.core.url import URL
+from urlfinder.core.elements.url import URL
 from urlfinder.core.url_parser import URLParser
 
 class TestDomain(unittest.TestCase):

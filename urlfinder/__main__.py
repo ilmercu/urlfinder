@@ -1,7 +1,6 @@
-from urlfinder.core.url import URL
+from core.elements.url import URL
 from urlfinder.core.finder import Finder
 from core.url_parser import URLParser
-from core.scope_parser import ScopeParser
 from urlfinder.core.output_manager import OutputManager
 import click
 
@@ -15,7 +14,7 @@ def main(url, domains, check_status):
         domains = domains.replace(' ', '')
 
         for domain in domains.split(','):
-            url_parser = ScopeParser(url=domain)
+            url_parser = URLParser(url=domain, is_scope_domain=True)
             new_domain = URL(url_parser.get_parts())
             scope_domains.add(new_domain)
 

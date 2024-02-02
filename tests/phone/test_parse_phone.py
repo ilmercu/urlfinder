@@ -1,6 +1,6 @@
 import unittest
 
-from urlfinder.core.phone import Phone
+from urlfinder.core.elements.base_element import BaseElement
 from urlfinder.core.url_parser import URLParser
 
 class TestParsePhone(unittest.TestCase):
@@ -28,12 +28,12 @@ class TestParsePhone(unittest.TestCase):
         with self.assertRaises(AttributeError): 
             URLParser(main_url)
 
-    def test_get_phone_with_protocol(self):
+    def test_get_value_with_protocol(self):
         current_phone = '+111111111111'
         main_url = f'tel:{current_phone}'
         url_parser = URLParser(main_url)
-        phone = Phone(url_parser.get_parts())
-        self.assertEqual(phone.get_phone(), current_phone)
+        phone = BaseElement(url_parser.get_parts())
+        self.assertEqual(phone.get_value(), current_phone)
         
 if __name__ == '__main__':
     unittest.main()
