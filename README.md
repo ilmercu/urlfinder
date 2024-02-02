@@ -84,8 +84,21 @@ python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN-1>,<DOMAIN-2>,*.<DOMAIN-
 
 ## Improvements
 
-+ Retrieve URLs inside <script> tags
++ Retrieve URLs inside `<script>` tags
 + Add option to encode the URL
++ Generate and parse URLs coming from `<form>` tags with GET `action` and inputs as query parameters
++ Add a proxy to allow the user to interact with the page catching possible missing URLs
++ Add an option to make path fuzzable
++ Add an option to make fragment fuzzable
++ Use wordlist to enumerate directories and find other fuzzable endpoints
++ Create different URLs coming from a single one containing also original values. From `?id=5&action=create&token=111`:
+  + ?id=5&action=create&token=FUZZ0
+  + ?id=5&action=FUZZ0&token=111
+  + ?id=FUZZ0&action=create&token=111
+  + ?id=5&action=FUZZ0&token=FUZZ1
+  + ?id=FUZZ0&action=create&token=FUZZ1
+  + ?id=FUZZ0&action=FUZZ1&token=111
+  + ?id=FUZZ0&action=FUZZ1&token=FUZZ2
 
 ## Disclaimer
 

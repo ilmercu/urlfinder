@@ -1,8 +1,9 @@
 from __future__ import annotations
 from urllib.parse import ParseResult, quote_plus
 from tldextract import extract as domain_extractor
+from .base_element import BaseElement
 
-class URL:
+class URL(BaseElement):
     """
     This class represent an URL
     """
@@ -13,23 +14,17 @@ class URL:
 
         :param parts: parts of the new URL
         """
-        
-        self.parts = parts
 
-    def __eq__(self, other):
-        return self.parts == other.parts
+        super().__init__(parts)    
 
     def __hash__(self):
-        return hash(self.get_url(fuzz_parameters=True))
-    
-    def __str__(self):
-        return self.get_url()
+        return hash(self.get_value(fuzz_parameters=True))
     
     @classmethod
     def extract_domain(cls, url: URL):
         return domain_extractor(url.parts.netloc)
 
-    def get_url(self, fuzz_parameters: bool=False) -> str:
+    def get_value(self, fuzz_parameters: bool=False) -> str:
         """
         Get human readble or fuzzed format URL
 
