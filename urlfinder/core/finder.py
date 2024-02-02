@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from enum import Enum
 import logging
+from urllib3.exceptions import ReadTimeoutError
 
 from .elements.url import URL
-#from .elements.mail import Mail
 from .elements.base_element import BaseElement
 from .url_parser import URLParser
 from .output_manager import OutputManager, OutputManagerEnum
@@ -79,11 +79,15 @@ class Finder:
                     continue
             except requests.exceptions.InvalidSchema:
                 self.logger.error(f"Can't send request to an invalid URL. URL: {current_url}")
-                print(f"Can't send request to an invalid URL. URL: {current_url}")
+                print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
                 continue
             except requests.exceptions.ConnectionError:
                 self.logger.error(f'Failed to resolve {current_url}')
-                print(f"Failed to resolve {current_url}")
+                print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
+                continue
+            except ReadTimeoutError:
+                self.logger.error(f'Can\'t get a response from {current_url}')
+                print(f'{FinderColorEnum.ERROR_RED.value}{current_url}{FinderColorEnum.END_COLOR.value}')
                 continue
 
             print(f'{FinderColorEnum.SUCCESS_GREEN.value}{current_url}{FinderColorEnum.END_COLOR.value}')
