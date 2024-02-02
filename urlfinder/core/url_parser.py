@@ -1,6 +1,6 @@
 from urllib.parse import urlparse, parse_qsl, unquote_plus, quote_plus, ParseResult
 from enum import Enum
-from re import fullmatch
+from re import fullmatch, search
 
 
 class URLParserEnum(Enum):
@@ -9,7 +9,7 @@ class URLParserEnum(Enum):
     HTTP_PROTOCOL         = 'http'
     HTTPS_PROTOCOL        = 'https'
     PHONE_PROTOCOL        = 'tel'
-    PHONE_REGEX           = '\+?\d+'
+    PHONE_REGEX     = '(\+)?([^\d]*)([p\d-]+)([^\d]*)'
 
 class URLParser:
     """
@@ -48,7 +48,11 @@ class URLParser:
 
         _path = parts.path.replace(' ', '')
         if URLParserEnum.PHONE_PROTOCOL.value == parts.scheme and URLParser.__is_phone_number(_path):
-            _path = _path
+            _path = search(URLParserEnum.PHONE_REGEX.value, _path)
+            if _path.group(1):
+                _path = f'{_path.group(1)}{_path.group(3)}'
+            else:
+                _path = _path.group(3)
         else:
             _path = unquote_plus(parts.path)
 
@@ -63,7 +67,7 @@ class URLParser:
         :return: True if the string is a phone number, False otherwise 
         """
 
-        return fullmatch(URLParserEnum.PHONE_REGEX.value, phone_number)
+        return fullmatch(URLParserEnum.PHONE_REGEX.value, phone_number) is not None
 
     def __format_url(self) -> str:
         """
@@ -159,7 +163,8 @@ class URLParser:
         :return: True if the input is a valid phone number, False otherwise
         """
 
-        if '' != self.get_parts().scheme and URLParserEnum.PHONE_PROTOCOL.value != self.get_parts().scheme:
+        parts = self.get_parts()
+        if '' == parts.scheme or URLParserEnum.PHONE_PROTOCOL.value != parts.scheme:
             return False
         
         return URLParser.__is_phone_number(self.get_parts().path)
