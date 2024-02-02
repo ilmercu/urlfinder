@@ -4,12 +4,13 @@ from re import fullmatch, search
 
 
 class URLParserEnum(Enum):
-    MAIL_PROTOCOL         = 'mailto'
-    MAIL_REGEX            = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-    HTTP_PROTOCOL         = 'http'
-    HTTPS_PROTOCOL        = 'https'
-    PHONE_PROTOCOL        = 'tel'
-    PHONE_REGEX     = '(\+)?([^\d]*)([p\d-]+)([^\d]*)'
+    MAIL_PROTOCOL  = 'mailto'
+    MAIL_REGEX     = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    HTTP_PROTOCOL  = 'http'
+    HTTPS_PROTOCOL = 'https'
+    SMS_PROTOCOL   = 'sms'
+    PHONE_PROTOCOL = 'tel'
+    PHONE_REGEX    = r'(\+)?([^\d]*)([p\d-]+)([^\d]*)'
 
 class URLParser:
     """
@@ -47,7 +48,7 @@ class URLParser:
         _query = parse_qsl(parts.query, keep_blank_values=True)
 
         _path = parts.path.replace(' ', '')
-        if URLParserEnum.PHONE_PROTOCOL.value == parts.scheme and URLParser.__is_phone_number(_path):
+        if parts.scheme in [ URLParserEnum.PHONE_PROTOCOL.value, URLParserEnum.SMS_PROTOCOL.value ] and URLParser.__is_phone_number(_path):
             _path = search(URLParserEnum.PHONE_REGEX.value, _path)
             if _path.group(1):
                 _path = f'{_path.group(1)}{_path.group(3)}'
@@ -164,7 +165,7 @@ class URLParser:
         """
 
         parts = self.get_parts()
-        if '' == parts.scheme or URLParserEnum.PHONE_PROTOCOL.value != parts.scheme:
+        if '' == parts.scheme or parts.scheme not in [ URLParserEnum.PHONE_PROTOCOL.value, URLParserEnum.SMS_PROTOCOL.value ]:
             return False
         
         return URLParser.__is_phone_number(self.get_parts().path)

@@ -84,7 +84,6 @@ python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN-1>,<DOMAIN-2>,*.<DOMAIN-
 
 ## Improvements
 
-+ Retrieve phones from URLs using `sms` protocl
 + Retrieve URLs inside `<script>` tags
 + Add option to encode the URL
 + Generate and parse URLs coming from `<form>` tags with GET `action` and inputs as query parameters
