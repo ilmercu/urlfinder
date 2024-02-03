@@ -22,7 +22,6 @@ class TestValueSMS(unittest.TestCase):
         current_phone = '+111111111111'
         main_url = f'sms: {current_phone}test'
         url_parser = URLParser(main_url)
-        # invalid phone number is considered an URL so a base_url always exists
         phone = BaseElement(url_parser.get_parts())
         self.assertEqual(phone.get_value(), current_phone)
 
