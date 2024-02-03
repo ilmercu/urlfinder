@@ -9,6 +9,7 @@ URLs are taken from:
 urlfinder retrieves:
 + URL endpoints
 + email addresses
++ phone numbers
 
 Once an URL is found, query parameters (if any) are substituted with keywords `FUZZ0`, `FUZZ1`, etc. This allows to easily replace them injecting payloads using a fuzzing tool
 
@@ -21,9 +22,11 @@ urlfinder produces four files:
 
 The tool can retrieve only URLs coming from the same domain of URL passed as argument or retrieve the entire set of URLs based on domains in scope
 
-**WARNING**: based on the target or on the list of scope domains, the execution of the tool could be endless (for example scanning a social media) 
+**WARNING**: based on the target or on the scope, the execution of the tool could be endless (for example scanning a social media) 
 
 ## Setup environment
+
+### Create environment
 
 ```bash
 python -m venv env
@@ -31,8 +34,16 @@ python -m venv env
 
 ### Activate environment
 
+#### PowerShell
+
 ```bash
-./env/Scripts/activate
+.\env\Scripts\activate
+```
+
+#### Bash
+
+```bash
+source env/bin/activate
 ```
 
 ### Install dependencies
