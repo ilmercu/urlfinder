@@ -1,4 +1,4 @@
-from urllib.parse import urlparse, parse_qsl, unquote_plus, quote_plus, ParseResult
+from urllib.parse import urlparse, ParseResult
 from enum import Enum
 from re import fullmatch, search
 
@@ -31,12 +31,11 @@ class URLParser:
             url = f'https://{url}'
 
         if base_url:
-            self.base_url = URLParser.parse(base_url)
-        self.parts = URLParser.parse(url)
+            self.base_url = self.parse(base_url)
+        self.parts = self.parse(url)
         self.__format_url()
 
-    @classmethod
-    def parse(cls, url: str) -> ParseResult:
+    def parse(self, url: str) -> ParseResult:
         """
         Parse an URL
 
@@ -45,22 +44,45 @@ class URLParser:
         """
         
         parts = urlparse(url)
-        _query = parse_qsl(parts.query, keep_blank_values=True)
+        _query = self.parse_query_parameters(parts.query)
 
         _path = parts.path.replace(' ', '')
-        if parts.scheme in [ URLParserEnum.PHONE_PROTOCOL.value, URLParserEnum.SMS_PROTOCOL.value ] and URLParser.__is_phone_number(_path):
+        if parts.scheme in [ URLParserEnum.PHONE_PROTOCOL.value, URLParserEnum.SMS_PROTOCOL.value ] and self.__is_phone_number(_path):
             _path = search(URLParserEnum.PHONE_REGEX.value, _path)
             if _path.group(1):
                 _path = f'{_path.group(1)}{_path.group(3)}'
             else:
                 _path = _path.group(3)
         else:
-            _path = unquote_plus(parts.path)
+            _path = parts.path # keep the path as is, not considering the type of encoding
 
         return parts._replace(query=_query, path=_path)
     
-    @classmethod
-    def __is_phone_number(cls, phone_number: str):
+    def parse_query_parameters(self, query: str) -> list:
+        """
+        Parse query parameters not considering the type of encoding
+        
+        :param query: original query string
+        :return: list containing the pair (parameter_name, parameter_value)
+        """
+        
+        if not query:
+            return []
+
+        query_parameters = query.split('&')
+
+        result = [ ]
+        for query_parameter in query_parameters:
+            values = query_parameter.split('=')
+            if 1 == len(values):
+                value = ''
+            else:
+                value = values[1]
+            result.append((values[0], value))
+
+        return result
+
+    def __is_phone_number(self, phone_number: str):
         """
         Check if a string is a phone number
 
@@ -107,7 +129,7 @@ class URLParser:
         for query in self.parts.query:
             query_parameter = f'{query[0]}='
             if query[1]:
-                query_parameter = f'{query_parameter}{quote_plus(query[1])}'
+                query_parameter = f'{query_parameter}{query[1]}'
             queries += f'{query_parameter}&'
 
         # removing last &
@@ -168,7 +190,7 @@ class URLParser:
         if '' == parts.scheme or parts.scheme not in [ URLParserEnum.PHONE_PROTOCOL.value, URLParserEnum.SMS_PROTOCOL.value ]:
             return False
         
-        return URLParser.__is_phone_number(self.get_parts().path)
+        return self.__is_phone_number(self.get_parts().path)
     
     def __reparse(self, url: str) -> ParseResult:
         """
@@ -178,4 +200,4 @@ class URLParser:
         :return: ParseResult instance containing the parts of the URL
         """
         
-        self.parts = URLParser.parse(url)
+        self.parts = self.parse(url)
