@@ -1,6 +1,6 @@
 # urlfinder
 
-urlfinder is an enumeration tool which allows to find recursively all the URLs starting from a base one taken as input
+urlfinder is an enumeration tool which allows to find recursively all the URLs starting from a base one taken as input jumping also between different domains
 
 URLs are taken from:
 + `href attribute` from `<a>` tags
@@ -96,7 +96,7 @@ python urlfinder -u <BASE-URL> -d <SUBDOMAIN-1>.<DOMAIN-1>,<DOMAIN-2>,*.<DOMAIN-
 ## Improvements
 
 + Retrieve URLs inside `<script>` tags
-+ Add option to encode the URL
++ Retrieve endpoints inside an URL, e.g. https://jkljkl.jkl/test/?continue=https://jkljkl.jkl/test-2/?id=111
 + Generate and parse URLs coming from `<form>` tags with GET `action` and inputs as query parameters
 + Add a proxy to allow the user to interact with the page catching possible missing URLs
 + Add an option to make path fuzzable
