@@ -1,5 +1,5 @@
 from __future__ import annotations
-from urllib.parse import ParseResult, quote_plus
+from urllib.parse import ParseResult
 from tldextract import extract as domain_extractor
 from .base_element import BaseElement
 
@@ -43,7 +43,7 @@ class URL(BaseElement):
                 else:
                     query_parameter = f'{query[0]}='
                     if query[1]:
-                       query_parameter = f'{query_parameter}{quote_plus(query[1])}'
+                       query_parameter = f'{query_parameter}{query[1]}'
                     queries += f'{query_parameter}&'
                 i += 1
 
