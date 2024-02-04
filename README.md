@@ -1,6 +1,6 @@
 # urlfinder
 
-urlfinder is an enumeration tool which allows to find recursively all the URLs starting from a base one taken as input jumping also between different domains
+urlfinder is an enumeration tool that allows finding recursively all the URLs starting from a base one taken as input, also jumping between different domains.
 
 URLs are taken from:
 + `href attribute` from `<a>` tags
@@ -11,18 +11,18 @@ urlfinder retrieves:
 + email addresses
 + phone numbers
 
-Once an URL is found, query parameters (if any) are substituted with keywords `FUZZ0`, `FUZZ1`, etc. This allows to easily replace them injecting payloads using a fuzzing tool
+Once an URL is found, query parameters (if any) are substituted with keywords `FUZZ0`, `FUZZ1`, etc. This allows for easy replacement by injecting payloads using a fuzzing tool.
 
-urlfinder produces four files:
+urlfinder produces five files:
 + `url-complete-list.txt`: stores the list of all the original URLs found
 + `fuzzable-urls.txt`: stores the list of URLs containing `FUZZX` keywords
 + `mails.txt`: stores the list of email addresses
 + `phones.txt`: stores the list of phone numbers
 + `site-map.log`: stores the site map. It can be used to reconstruct the path to get a specific URL
 
-The tool can retrieve only URLs coming from the same domain of URL passed as argument or retrieve the entire set of URLs based on domains in scope
+The tool can retrieve only URLs coming from the same domain as the URL passed as argument or retrieve the entire set of URLs based on domains in scope
 
-**WARNING**: based on the target or on the scope, the execution of the tool could be endless (for example scanning a social media) 
+**WARNING**: based on the target or scope, the execution of the tool could be endless (for example scanning a social media) 
 
 ## Setup environment
 
